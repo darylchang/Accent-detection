@@ -1,0 +1,15 @@
+[ 26.05.2014 - 21:30:40 ]
+    (MSG) [2] in SMILExtract : openSMILE starting!
+[ 26.05.2014 - 21:30:40 ]
+    (MSG) [2] in SMILExtract : config file is: config/cs224s.conf
+[ 26.05.2014 - 21:30:40 ]
+    (MSG) [2] in cComponentManager : successfully registered 102 component types.
+[ 26.05.2014 - 21:30:40 ]
+    (MSG) [2] in configManager : reading config file 'config/cs224s.conf'
+[ 26.05.2014 - 21:30:40 ]
+    (MSG) [2] in cComponentManager : successfully finished createInstances
+                                 (17 component instances were finalised, 1 data memories were finalised)
+[ 26.05.2014 - 21:30:40 ]
+    (MSG) [2] in cComponentManager : starting single thread processing loop
+[ 26.05.2014 - 21:30:41 ]
+    (MSG) [2] in cComponentManager : Processing finished! System ran for 2634 ticks.
