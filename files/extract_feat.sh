@@ -21,7 +21,7 @@ configfile='cs224s.conf'
 #esac
 datapath=../data
 
-echo 'Acquiring audio features for dataset' $dataset
+#echo 'Acquiring audio features for dataset' $dataset
 
 # check the OS version - students who want to run separately on their personal
 # machines need this line of code (can technically run 32-bit version on any
@@ -39,13 +39,10 @@ fi
 # extract the features!
 # can technically use 'find', but split into 5 loops to make things clear
 #rm feats/$dataset.lsvm
-for dname in $datapath/*
+for fname in $datapath/*
 do
-	for fname in $datapath/$dname/* 
-		do
-  			echo 'Extracting features for' $fname
-  			$execname -C config/$configfile -I $fname -O feats/train.lsvm -noconsoleoutput
-		done
+	echo 'Extracting features for' $fname
+  	$execname -C config/$configfile -I $fname -O feats/train.lsvm -noconsoleoutput
 done
 
 # remove the log file at the end (don't need it for CS224S)
