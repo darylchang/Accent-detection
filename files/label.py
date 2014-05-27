@@ -20,11 +20,10 @@ labelDict = {
 
 fileName = sys.argv[1]
 language = fileName.split('-')[0].split('/')[-1]
-isTrain = int(sys.argv[2])
+gender = fileName.split('-')[1][0]
 
-if isTrain:
-	f = open('feats/train_labels.txt', 'a')
-else:
-	f = open('feats/test_labels.txt', 'a')
-
+f = open('extracted/language_labels.txt', 'a')
 f.write(str(labelDict[language]) + '\n')
+
+f = open('extracted/gender_labels.txt', 'a')
+f.write(gender + '\n')
