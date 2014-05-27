@@ -1,8 +1,8 @@
-#!/bin/bash
+ #!/bin/bash
 
-for i in {1..10}
+iterations=10
+
+for i in $(seq 1 $iterations)
 do
-	bash extract_feat.sh
-	bash train.sh
-	bash predict.sh
+	echo $iterations
 done
