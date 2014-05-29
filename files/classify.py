@@ -1,9 +1,14 @@
-from sklearn import svm
 import numpy as np
-from sklearn import cross_validation
+from sklearn import cross_validation, svm, tree
+from sklearn.ensemble import RandomForestClassifier
 
-clf = svm.SVC()
+# Set parameters for classification
+rowsToKeep = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31] # 0-indexed
+colsToKeep = [1,2,3,4,5,6,7,8,9,10,11]                    # 0-indexed
+estimators = 59
 k = 5
+clf = RandomForestClassifier(n_estimators=estimators)
+print "rows: ", rowsToKeep, ", cols: ", colsToKeep, ", estimators: ", estimators
 
 # Read in training features and labels
 featureFile = open('extracted/features.lsvm', 'r')
@@ -23,8 +28,6 @@ languageLabels = np.array([int(line.strip('\n')) for line in languageLabels.read
 genderLabels = np.array([line.strip('\n') for line in genderLabels.readlines()])
 
 # Choose subset of features
-rowsToKeep = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31] # 0-indexed
-colsToKeep = [0,1,2,3,4,5,6,7,8,9,10,11]                    # 0-indexed
 numFeatures = len(rowsToKeep) * len(colsToKeep)
 featureSubset = np.empty([len(features), numFeatures])
 
