@@ -2,7 +2,7 @@ from sklearn import svm
 import numpy as np
 from sklearn import cross_validation
 
-clf = svm.SVC(kernel='rbf', C=1)
+clf = svm.SVC()
 k = 5
 
 # Read in training features and labels
@@ -22,11 +22,9 @@ features = np.array(features)
 languageLabels = np.array([int(line.strip('\n')) for line in languageLabels.readlines()])
 genderLabels = np.array([line.strip('\n') for line in genderLabels.readlines()])
 
-print len(languageLabels)
-
 # Choose subset of features
-rowsToKeep = [0,1,2,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31] # 0-indexed
-colsToKeep = [1,10,11]                    # 0-indexed
+rowsToKeep = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31] # 0-indexed
+colsToKeep = [0,1,2,3,4,5,6,7,8,9,10,11]                    # 0-indexed
 numFeatures = len(rowsToKeep) * len(colsToKeep)
 featureSubset = np.empty([len(features), numFeatures])
 
@@ -45,6 +43,21 @@ maleLanguageLabels = languageLabels[maleIndices]
 femaleIndices = [i for i in range(len(genderLabels)) if genderLabels[i]=="f"]
 femaleFeatureSubset = featureSubset[femaleIndices]
 femaleLanguageLabels = languageLabels[femaleIndices]
+
+# Language families
+#IndoEuropean -> Dutch, French, German, Italian, Portuguese, Spanish, Macedonian, Polish, Russian
+#Altaic -> Japanese, Korean, Turkish
+#SinoTibetan -> Mandarin, Cantonese
+#Semitic -> Arabic
+
+#Language sub-families
+#Turkic -> Turkish
+#Germanic -> German, Dutch
+#Romance -> Italian, French, Spanish, Portuguese
+#Slavic -> Polish, Macedonian, Russian
+
+
+
 
 # Run k-fold cross-validation on classifier
 scores = cross_validation.cross_val_score(clf, featureSubset, languageLabels, cv=k)
