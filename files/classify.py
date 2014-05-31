@@ -47,6 +47,21 @@ femaleIndices = [i for i in range(len(genderLabels)) if genderLabels[i]=="f"]
 femaleFeatureSubset = featureSubset[femaleIndices]
 femaleLanguageLabels = languageLabels[femaleIndices]
 
+# Language families
+#IndoEuropean -> Dutch, French, German, Italian, Portuguese, Spanish, Macedonian, Polish, Russian
+#Altaic -> Japanese, Korean, Turkish
+#SinoTibetan -> Mandarin, Cantonese
+#Semitic -> Arabic
+
+#Language sub-families
+#Turkic -> Turkish
+#Germanic -> German, Dutch
+#Romance -> Italian, French, Spanish, Portuguese
+#Slavic -> Polish, Macedonian, Russian
+
+
+
+
 # Run k-fold cross-validation on classifier
 scores = cross_validation.cross_val_score(clf, featureSubset, languageLabels, cv=k)
 maleScores = cross_validation.cross_val_score(clf, maleFeatureSubset, maleLanguageLabels, cv=k)
