@@ -1,0 +1,8 @@
+=== First 5 languages ===
+arabic mandarin turkish spanish russian
+
+=== First 10 languages ===
+arabic mandarin turkish spanish russian dutch korean french german portuguese
+
+=== All 15 languages ===
+arabic mandarin turkish spanish russian dutch korean french german portuguese italian japanese polish cantonese macedonian
