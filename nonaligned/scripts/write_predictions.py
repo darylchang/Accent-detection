@@ -1,4 +1,6 @@
 import numpy as np
+import pickle, re
+from optparse import OptionParser
 from sklearn import cross_validation, svm, tree
 from sklearn.ensemble import RandomForestClassifier
 
@@ -6,14 +8,25 @@ from sklearn.ensemble import RandomForestClassifier
 rowsToKeep = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31] # 0-indexed
 colsToKeep = [1,2,3,4,5,6,7,8,9,10,11]                    # 0-indexed
 estimators = 59
-k = 5
 clf = RandomForestClassifier(n_estimators=estimators)
 print "rows: ", rowsToKeep, ", cols: ", colsToKeep, ", estimators: ", estimators
+
+# Read options from command line
+parser = OptionParser()
+parser.add_option("--numLangs", "--languages", dest="numLangs", default=15,
+		                  help="select number of languages", metavar="NUMLANGS")
+parser.add_option("--downsample", "--downsample",
+		                  action="store_true", dest="downsample", default=False,
+				                    help="Take only 20 samples from each language")
+(options, args) = parser.parse_args()
+numLangs = int(options.numLangs)
+downsample = options.downsample
 
 # Read in training features and labels
 featureFile = open('../extracted/features.lsvm', 'r')
 languageLabels = open('../extracted/language_labels.txt', 'r')
 genderLabels = open('../extracted/gender_labels.txt', 'r')
+fileNames = pickle.load(open('../../metadata/file_map.pickle', 'r')).values()
 
 featureLines = [line.strip('\n') for line in featureFile.readlines()]
 features = []
@@ -26,6 +39,18 @@ for line in featureLines:
 features = np.array(features)
 languageLabels = np.array([int(line.strip('\n')) for line in languageLabels.readlines()])
 genderLabels = np.array([line.strip('\n') for line in genderLabels.readlines()])
+fileNames = np.array(fileNames)
+
+# Downsample languages to 20 samples each if specified
+if downsample:
+	firstIndices =  [np.where(languageLabels==label)[0][0] for label in range(0,15)]
+	rangeIndices = [range(firstIndex, firstIndex+20) for firstIndex in firstIndices]
+	indices = []
+	[indices.extend(el) for el in rangeIndices]
+	features = features[indices]
+	genderLabels = genderLabels[indices]
+	languageLabels = languageLabels[indices]
+	fileNames = fileNames[indices] 
 
 # Choose subset of features
 numFeatures = len(rowsToKeep) * len(colsToKeep)
@@ -38,40 +63,25 @@ for i in range(len(features)):
 	lineSubset = np.reshape(lineSubset, lineSubset.size)
 	featureSubset[i] = lineSubset
 
-# Separate into male and female
-maleIndices = [i for i in range(len(genderLabels)) if genderLabels[i]=="m"]
-maleFeatureSubset = featureSubset[maleIndices]
-maleLanguageLabels = languageLabels[maleIndices]
+# Choose a subset of languages depending on command line option
+if numLangs == 5:
+	indices = [i for i in range(len(languageLabels)) if languageLabels[i] in [0,9,12,13,14]]
+elif numLangs == 10:
+	indices = [i for i in range(len(languageLabels)) if languageLabels[i] in [0,2,3,4,7,9,11,12,13,14]]
+elif numLangs == 15:
+	indices = range(len(languageLabels))
 
-femaleIndices = [i for i in range(len(genderLabels)) if genderLabels[i]=="f"]
-femaleFeatureSubset = featureSubset[femaleIndices]
-femaleLanguageLabels = languageLabels[femaleIndices]
-
-# Reduce to 10 languages
-labelDict = {
-	'arabic': 0,
-	'cantonese': 1,
-	'dutch': 2,
-	'french': 3,
-	'german': 4,
-	'italian': 5,
-	'japanese': 6,
-	'korean': 7,
-	'macedonian': 8,
-	'mandarin': 9,
-	'polish': 10,
-	'portuguese': 11,
-	'russian': 12,
-	'spanish': 13,
-	'turkish': 14,
-}
-
-indices = [i for i in range(len(languageLabels)) if languageLabels[i] in [0,2,3,4,7,9,11,12,13,14]]
-languageLabels = languageLabels[indices]
 features = features[indices]
+languageLabels = languageLabels[indices]
+genderLabels = genderLabels[indices]
+fileNames = fileNames[indices]
 
 # Write to prediction file
-f = open('predictions/predictions_10.txt', 'w')
+if downsample:
+	outputFileName = '../predictions/{}_downsample.txt'.format(numLangs)
+else:
+	outputFileName = '../predictions/{}.txt'.format(numLangs)
+f = open(outputFileName, 'w')
 
 for i in range(len(features)):
 	print i
@@ -84,7 +94,8 @@ for i in range(len(features)):
 	clf.fit(trainingFeatures,trainingLabels)
 	testPrediction = clf.predict(testFeatures)
 	
-	f.write(str(indices[i]) + ' ')
+	fileId = re.findall('.*-[mf](\d+).wav', fileNames[i])[0]
+	f.write(str(fileId) + ' ')
 	f.write(str(testLabel) + ' ')
 	f.write(str(testPrediction[0]) + ' ')
 	f.write(str(testLabel == testPrediction[0]) + '\n')
