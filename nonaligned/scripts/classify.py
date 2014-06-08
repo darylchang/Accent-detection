@@ -2,7 +2,7 @@ import numpy as np
 import pickle, random, re
 from optparse import OptionParser
 from sklearn import cross_validation, svm, tree
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -11,7 +11,7 @@ rowsToKeep = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,2
 colsToKeep = [1,2,3,4,5,6,7,8,9,10,11]                    # 0-indexed
 estimators = 59
 k = 5 # number of folds for cross-validation
-clf = RandomForestClassifier
+clf = RandomForestClassifier(min_samples_split=4, min_samples_leaf=2, n_estimators=estimators)
 
 # Read options from command line
 parser = OptionParser()
@@ -103,14 +103,14 @@ else:
 
 # Run k-fold cross-validation on classifier
 scores = cross_validation.cross_val_score(clf, features, languageLabels, cv=k)
-#maleScores = cross_validation.cross_val_score(clf, maleFeatureSubset, maleLanguageLabels, cv=k)
-#femaleScores = cross_validation.cross_val_score(clf, femaleFeatureSubset, femaleLanguageLabels, cv=k)
+maleScores = cross_validation.cross_val_score(clf, maleFeatureSubset, maleLanguageLabels, cv=k)
+femaleScores = cross_validation.cross_val_score(clf, femaleFeatureSubset, femaleLanguageLabels, cv=k)
 
 # Print out and write cross-validation results
 print "\nnumLangs: {}, downsample: {}".format(numLangs, downsample)
 print "Total cross-validation score: ", scores.mean()
-#print "Male cross-validation score: ", maleScores.mean()
-#print "Female cross-validation score: ", femaleScores.mean()
+print "Male cross-validation score: ", maleScores.mean()
+print "Female cross-validation score: ", femaleScores.mean()
 
 # Simulate game
 numCorrect = 0.

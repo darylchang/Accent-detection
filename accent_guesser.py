@@ -52,7 +52,6 @@ def isValidNumber(response, max_val):
         return False
 
 def wait_for_response(wav_file, langs):
-	print wav_file
 	process = subprocess.Popen(["afplay", wav_file])
 	response = ""
 	max_lang = len(langs)

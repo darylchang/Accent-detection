@@ -1,6 +1,6 @@
 import random
 
-data = [line.split() for line in open('../predictions/15_downsample.txt').readlines()]
+data = [line.split() for line in open('../predictions/knn_10_downsample.txt').readlines()]
 guessDict = {}
 
 # Extract data

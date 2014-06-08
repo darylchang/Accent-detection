@@ -3,12 +3,14 @@ import pickle, re
 from optparse import OptionParser
 from sklearn import cross_validation, svm, tree
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
 
 # Set parameters for classification
 rowsToKeep = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31] # 0-indexed
 colsToKeep = [1,2,3,4,5,6,7,8,9,10,11]                    # 0-indexed
 estimators = 59
-clf = RandomForestClassifier(n_estimators=estimators)
+clf = svm.SVC(kernel='rbf')
 print "rows: ", rowsToKeep, ", cols: ", colsToKeep, ", estimators: ", estimators
 
 # Read options from command line
@@ -41,17 +43,6 @@ languageLabels = np.array([int(line.strip('\n')) for line in languageLabels.read
 genderLabels = np.array([line.strip('\n') for line in genderLabels.readlines()])
 fileNames = np.array(fileNames)
 
-# Downsample languages to 20 samples each if specified
-if downsample:
-	firstIndices =  [np.where(languageLabels==label)[0][0] for label in range(0,15)]
-	rangeIndices = [range(firstIndex, firstIndex+20) for firstIndex in firstIndices]
-	indices = []
-	[indices.extend(el) for el in rangeIndices]
-	features = features[indices]
-	genderLabels = genderLabels[indices]
-	languageLabels = languageLabels[indices]
-	fileNames = fileNames[indices] 
-
 # Choose subset of features
 numFeatures = len(rowsToKeep) * len(colsToKeep)
 featureSubset = np.empty([len(features), numFeatures])
@@ -78,10 +69,10 @@ fileNames = fileNames[indices]
 
 # Write to prediction file
 if downsample:
-	outputFileName = '../predictions/{}_downsample.txt'.format(numLangs)
+	outputFileName = '../predictions/svcrbf_{}_downsample.txt'.format(numLangs)
 else:
-	outputFileName = '../predictions/{}.txt'.format(numLangs)
-f = open(outputFileName, 'w')
+	outputFileName = '../predictions/svcrbf_{}.txt'.format(numLangs)
+f = open(outputFileName, 'a')
 
 for i in range(len(features)):
 	print i
@@ -89,6 +80,15 @@ for i in range(len(features)):
 	trainingLabels = np.delete(languageLabels,(i),axis=0)
 	testFeatures = features[i]
 	testLabel = languageLabels[i]
+
+	# Downsample languages to 20 training samples each if specified
+	if downsample:
+		firstIndices = [np.where(languageLabels==label)[0][0] for label in list(set(languageLabels))]
+		rangeIndices = [range(firstIndex, firstIndex+20) for firstIndex in firstIndices]
+		indices = []
+		[indices.extend(el) for el in rangeIndices]
+		trainingFeatures = trainingFeatures[indices]
+		trainingLabels = trainingLabels[indices]
 	
 	clf = RandomForestClassifier(n_estimators=estimators)
 	clf.fit(trainingFeatures,trainingLabels)

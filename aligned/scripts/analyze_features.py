@@ -51,6 +51,6 @@ for language, featureMatrix in sorted(langFeaturesDict.items()):
 	coords = nlargest_indices(zScoreDict[language], n)
 	print "Top features for {}: ".format(language)
 	for phonemeIndex, mfccIndex, zScore in coords:
-		print "		Phoneme: {}, OpenSmile feature: {}, average: {}, std: {}, zScore: {}".format(
-			  phonemes[phonemeIndex], mfccIndex, featureAverages[phonemeIndex][mfccIndex], 
+		print "		Phoneme: {}, OpenSmile feature: {}, value: {}, average: {}, std: {}, zScore: {}".format(
+			  phonemes[phonemeIndex], mfccIndex, featureMatrix[phonemeIndex][mfccIndex], featureAverages[phonemeIndex][mfccIndex], 
 			  featureStds[phonemeIndex][mfccIndex], zScore)
