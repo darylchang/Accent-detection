@@ -15,7 +15,7 @@ for language in sorted(os.listdir('../textgrid/')):
 		# Use sox to trim files into individual phones and write to wav directory
 		for i in range(len(lines)/3):
 			xmin, xmax, phone = lines[i*3:i*3+3]
-			phone = phone.strip('\"')
+			phone = re.sub('\d', '', phone.strip('\"'))
 
 			if phone in phonemes and phone not in ['sp','sil']:
 				outputPath = '../wav/{}/{}-{}-{}.wav'.format(language, f.replace('.TextGrid',''), phone, i)
